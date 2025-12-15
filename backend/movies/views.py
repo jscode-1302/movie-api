@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework import permissions
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import  cache_page
-from django_redis import cache
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 from drf_spectacular.utils import extend_schema
 from .models import Movie, Director, Actor
 from .serializers import MovieSerializer, DirectorSerializer, ActorSerializer
