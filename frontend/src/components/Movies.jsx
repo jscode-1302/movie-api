@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Toast from './Toast';
 import useToast from '../hooks/useToast';
+import { api } from '../utils/api';
 
 function Movies() {
   const [movies, setMovies] = useState([]);
@@ -34,7 +35,7 @@ function Movies() {
 
   const fetchMovies = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/movies/');
+      const response = await api.get('/movies/', { skipAuth: true });
 
       if (response.ok) {
         const data = await response.json();
@@ -43,7 +44,7 @@ function Movies() {
         showToast('Error al cargar las películas', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     } finally {
       setLoading(false);
     }
@@ -51,7 +52,7 @@ function Movies() {
 
   const fetchDirectors = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/directors/');
+      const response = await api.get('/directors/', { skipAuth: true });
       if (response.ok) {
         const data = await response.json();
         setDirectors(data);
@@ -63,7 +64,7 @@ function Movies() {
 
   const fetchActors = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/actors/');
+      const response = await api.get('/actors/', { skipAuth: true });
       if (response.ok) {
         const data = await response.json();
         setActors(data);
@@ -83,14 +84,7 @@ function Movies() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/directors/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(newDirector),
-      });
+      const response = await api.post('/directors/', newDirector);
 
       if (response.ok) {
         const data = await response.json();
@@ -105,7 +99,7 @@ function Movies() {
         showToast(JSON.stringify(data) || 'Error al crear el director', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     }
   };
 
@@ -119,14 +113,7 @@ function Movies() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/actors/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(newActor),
-      });
+      const response = await api.post('/actors/', newActor);
 
       if (response.ok) {
         const data = await response.json();
@@ -141,7 +128,7 @@ function Movies() {
         showToast(JSON.stringify(data) || 'Error al crear el actor', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     }
   };
 
@@ -165,14 +152,7 @@ function Movies() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/movies/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(newMovie),
-      });
+      const response = await api.post('/movies/', newMovie);
 
       if (response.ok) {
         showToast('Película creada exitosamente', 'success');
@@ -184,7 +164,7 @@ function Movies() {
         showToast(JSON.stringify(data) || 'Error al crear la película', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     }
   };
 
@@ -210,12 +190,7 @@ function Movies() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/movies/${id}/`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await api.delete(`/movies/${id}/`);
 
       if (response.ok) {
         showToast('Película eliminada exitosamente', 'success');
@@ -224,7 +199,7 @@ function Movies() {
         showToast('Error al eliminar la película', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     }
   };
 

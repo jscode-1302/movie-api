@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Toast from './Toast';
 import useToast from '../hooks/useToast';
+import { api } from '../utils/api';
 
 function MovieDetail() {
   const { id } = useParams();
@@ -35,7 +36,7 @@ function MovieDetail() {
 
   const fetchMovieDetail = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/movies/${id}/`);
+      const response = await api.get(`/movies/${id}/`, { skipAuth: true });
 
       if (response.ok) {
         const data = await response.json();
@@ -53,7 +54,7 @@ function MovieDetail() {
         showToast('Error al cargar la película', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ function MovieDetail() {
 
   const fetchDirectors = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/directors/');
+      const response = await api.get('/directors/', { skipAuth: true });
       if (response.ok) {
         const data = await response.json();
         setDirectors(data);
@@ -73,7 +74,7 @@ function MovieDetail() {
 
   const fetchActors = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/actors/');
+      const response = await api.get('/actors/', { skipAuth: true });
       if (response.ok) {
         const data = await response.json();
         setActors(data);
@@ -93,14 +94,7 @@ function MovieDetail() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/movies/${id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(editForm),
-      });
+      const response = await api.patch(`/movies/${id}/`, editForm);
 
       if (response.ok) {
         showToast('Película actualizada exitosamente', 'success');
@@ -111,7 +105,7 @@ function MovieDetail() {
         showToast(JSON.stringify(data) || 'Error al actualizar la película', 'error');
       }
     } catch (err) {
-      showToast('Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Error de conexión con el servidor', 'error');
     }
   };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../utils/api';
 
 function Actors() {
   const [actors, setActors] = useState([]);
@@ -21,7 +22,7 @@ function Actors() {
 
   const fetchActors = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/actors/');
+      const response = await api.get('/actors/', { skipAuth: true });
       if (response.ok) {
         const data = await response.json();
         setActors(data);
@@ -29,7 +30,7 @@ function Actors() {
         setError('Error loading actors');
       }
     } catch (err) {
-      setError('Server connection error');
+      setError(err.message || 'Server connection error');
     } finally {
       setLoading(false);
     }
@@ -45,14 +46,7 @@ function Actors() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/actors/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(newActor),
-      });
+      const response = await api.post('/actors/', newActor);
 
       if (response.ok) {
         setSuccess('Actor created successfully');
@@ -65,7 +59,7 @@ function Actors() {
         setError(JSON.stringify(data) || 'Error creating actor');
       }
     } catch (err) {
-      setError('Server connection error');
+      setError(err.message || 'Server connection error');
     }
   };
 
@@ -79,14 +73,7 @@ function Actors() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/actors/${editingActor.id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(editingActor),
-      });
+      const response = await api.patch(`/actors/${editingActor.id}/`, editingActor);
 
       if (response.ok) {
         setSuccess('Actor updated successfully');
@@ -99,7 +86,7 @@ function Actors() {
         setError(JSON.stringify(data) || 'Error updating actor');
       }
     } catch (err) {
-      setError('Server connection error');
+      setError(err.message || 'Server connection error');
     }
   };
 

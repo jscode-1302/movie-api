@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../utils/api';
 
 function Directors() {
   const [directors, setDirectors] = useState([]);
@@ -21,7 +22,7 @@ function Directors() {
 
   const fetchDirectors = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/directors/');
+      const response = await api.get('/directors/', { skipAuth: true });
       if (response.ok) {
         const data = await response.json();
         setDirectors(data);
@@ -29,7 +30,7 @@ function Directors() {
         setError('Error loading directors');
       }
     } catch (err) {
-      setError('Server connection error');
+      setError(err.message || 'Server connection error');
     } finally {
       setLoading(false);
     }
@@ -45,14 +46,7 @@ function Directors() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/directors/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(newDirector),
-      });
+      const response = await api.post('/directors/', newDirector);
 
       if (response.ok) {
         setSuccess('Director created successfully');
@@ -65,7 +59,7 @@ function Directors() {
         setError(JSON.stringify(data) || 'Error creating director');
       }
     } catch (err) {
-      setError('Server connection error');
+      setError(err.message || 'Server connection error');
     }
   };
 
@@ -79,14 +73,7 @@ function Directors() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/directors/${editingDirector.id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(editingDirector),
-      });
+      const response = await api.patch(`/directors/${editingDirector.id}/`, editingDirector);
 
       if (response.ok) {
         setSuccess('Director updated successfully');
@@ -99,7 +86,7 @@ function Directors() {
         setError(JSON.stringify(data) || 'Error updating director');
       }
     } catch (err) {
-      setError('Server connection error');
+      setError(err.message || 'Server connection error');
     }
   };
 
