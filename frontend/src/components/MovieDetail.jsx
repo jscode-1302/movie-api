@@ -44,10 +44,10 @@ function MovieDetail() {
         setEditForm({
           title: data.title,
           year: data.year,
-          rating: data.rating,
+          rating: data.rating ? parseFloat(data.rating).toFixed(1) : '',
           description: data.description,
-          director: data.director || '',
-          actors_id: data.actors || [],
+          director: data.director_data?.id || data.director || '',
+          actors_id: data.actors_data?.map(actor => actor.id) || data.actors || [],
           genres: data.genres || [],
         });
       } else {
