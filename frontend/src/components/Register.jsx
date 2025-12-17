@@ -9,6 +9,7 @@ function Register() {
     password2: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,6 +23,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (formData.password !== formData.password2) {
       setError('Las contraseñas no coinciden');
@@ -47,7 +49,8 @@ function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        navigate('/login');
+        setSuccess('Registro exitoso. Redirigiendo al login...');
+        setTimeout(() => navigate('/login'), 1500);
       } else {
         if (data.username) {
           setError(data.username[0]);
@@ -70,10 +73,20 @@ function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-white mb-6 text-center">Registrarse</h2>
-
+        <div className="flex justify-between items-center h-16">
+          <Link to="/movies" className="text-blue-500 hover:text-blue-400">
+            ← Volver a películas
+          </Link>
+        </div>
         {error && (
           <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded mb-4">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-500/10 border border-green-500 text-green-500 px-4 py-2 rounded mb-4">
+            {success}
           </div>
         )}
 
