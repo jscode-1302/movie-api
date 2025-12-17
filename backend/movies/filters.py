@@ -4,10 +4,12 @@ from .models import Movie
 class MovieFilter(filters.FilterSet):
     title = filters.CharFilter(lookup_expr='icontains')
     genres = filters.CharFilter(method='filter_genres')
+    director = filters.NumberFilter(field_name='director__id')
+    actor = filters.NumberFilter(field_name='actors__id')
 
     class Meta:
         model = Movie
-        fields = ['title', 'genres', 'year', 'rating']
+        fields = ['title', 'genres', 'year', 'rating', 'director', 'actor']
 
     def filter_genres(self, queryset, name, value):
         return queryset.filter(genres__icontains=value)

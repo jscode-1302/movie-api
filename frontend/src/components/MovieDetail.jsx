@@ -51,10 +51,10 @@ function MovieDetail() {
           genres: data.genres || [],
         });
       } else {
-        showToast('Error al cargar la película', 'error');
+        showToast('Error loading movie', 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Server connection error', 'error');
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ function MovieDetail() {
         setDirectors(data);
       }
     } catch (err) {
-      console.error('Error al cargar directores');
+      console.error('Error loading directors');
     }
   };
 
@@ -80,7 +80,7 @@ function MovieDetail() {
         setActors(data);
       }
     } catch (err) {
-      console.error('Error al cargar actores');
+      console.error('Error loading actors');
     }
   };
 
@@ -89,7 +89,7 @@ function MovieDetail() {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      showToast('Debes iniciar sesión para editar películas', 'error');
+      showToast('You must log in to edit movies', 'error');
       return;
     }
 
@@ -97,15 +97,15 @@ function MovieDetail() {
       const response = await api.patch(`/movies/${id}/`, editForm);
 
       if (response.ok) {
-        showToast('Película actualizada exitosamente', 'success');
+        showToast('Movie updated successfully', 'success');
         setIsEditing(false);
         fetchMovieDetail();
       } else {
         const data = await response.json();
-        showToast(JSON.stringify(data) || 'Error al actualizar la película', 'error');
+        showToast(JSON.stringify(data) || 'Error updating movie', 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Server connection error', 'error');
     }
   };
 
@@ -143,7 +143,7 @@ function MovieDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Cargando película...</div>
+        <div className="text-white text-xl">Loading movie...</div>
       </div>
     );
   }
@@ -151,7 +151,7 @@ function MovieDetail() {
   if (!movie) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Película no encontrada</div>
+        <div className="text-white text-xl">Movie not found</div>
       </div>
     );
   }
@@ -162,7 +162,7 @@ function MovieDetail() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/movies" className="text-blue-500 hover:text-blue-400">
-              ← Volver a películas
+              ← Back to movies
             </Link>
           </div>
         </div>
@@ -171,7 +171,7 @@ function MovieDetail() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!isAuthenticated && (
           <div className="bg-yellow-500/10 border border-yellow-500 text-yellow-500 px-4 py-3 rounded mb-6">
-            Para editar o eliminar esta película necesitas iniciar sesión
+            You need to log in to edit or delete this movie
           </div>
         )}
 
@@ -193,7 +193,7 @@ function MovieDetail() {
                 <div className="space-y-3 mb-6">
                   {movie.year && (
                     <div>
-                      <span className="text-gray-400">Año:</span>
+                      <span className="text-gray-400">Year:</span>
                       <span className="text-white ml-2">{movie.year}</span>
                     </div>
                   )}
@@ -208,7 +208,7 @@ function MovieDetail() {
 
                   {movie.genres && movie.genres.length > 0 && (
                     <div>
-                      <span className="text-gray-400">Géneros:</span>
+                      <span className="text-gray-400">Genres:</span>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {movie.genres.map((genre, index) => (
                           <span
@@ -234,7 +234,7 @@ function MovieDetail() {
 
                   {movie.actors_data && movie.actors_data.length > 0 && (
                     <div>
-                      <span className="text-gray-400">Actores:</span>
+                      <span className="text-gray-400">Actors:</span>
                       <div className="text-white ml-2 mt-1">
                         {movie.actors_data.map((actor, index) => (
                           <span key={actor.id}>
@@ -249,7 +249,7 @@ function MovieDetail() {
 
                 {movie.description && (
                   <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-white mb-2">Descripción</h2>
+                    <h2 className="text-xl font-semibold text-white mb-2">Description</h2>
                     <p className="text-gray-300 leading-relaxed">{movie.description}</p>
                   </div>
                 )}
@@ -259,7 +259,7 @@ function MovieDetail() {
                     onClick={() => setIsEditing(true)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition duration-200"
                   >
-                    Editar
+                    Edit
                   </button>
                 )}
               </div>
@@ -267,11 +267,11 @@ function MovieDetail() {
           </div>
         ) : (
           <div className="bg-gray-800 rounded-lg p-8 shadow-lg">
-            <h2 className="text-2xl font-bold text-white mb-6">Editar Película</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Edit Movie</h2>
             <form onSubmit={handleEdit} className="space-y-4">
               <div>
                 <label htmlFor="title" className="block text-gray-300 mb-2">
-                  Título
+                  Title
                 </label>
                 <input
                   type="text"
@@ -285,7 +285,7 @@ function MovieDetail() {
 
               <div>
                 <label htmlFor="year" className="block text-gray-300 mb-2">
-                  Año
+                  Year
                 </label>
                 <input
                   type="number"
@@ -314,7 +314,7 @@ function MovieDetail() {
 
               <div>
                 <label htmlFor="description" className="block text-gray-300 mb-2">
-                  Descripción
+                  Description
                 </label>
                 <textarea
                   id="description"
@@ -331,7 +331,7 @@ function MovieDetail() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar director..."
+                  placeholder="Search director..."
                   value={directorSearch}
                   onChange={(e) => setDirectorSearch(e.target.value)}
                   className="w-full px-4 py-2 mb-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
@@ -341,7 +341,7 @@ function MovieDetail() {
                   onChange={(e) => setEditForm({ ...editForm, director: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="">Selecciona un director</option>
+                  <option value="">Select a director</option>
                   {directors
                     .filter((director) =>
                       director.name.toLowerCase().includes(directorSearch.toLowerCase())
@@ -356,18 +356,18 @@ function MovieDetail() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-gray-300">Actores</label>
+                  <label className="block text-gray-300">Actors</label>
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar actor..."
+                  placeholder="Search actor..."
                   value={actorSearch}
                   onChange={(e) => setActorSearch(e.target.value)}
                   className="w-full px-4 py-2 mb-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                 />
                 <div className="bg-gray-700 rounded border border-gray-600 p-3 max-h-48 overflow-y-auto">
                   {actors.length === 0 ? (
-                    <p className="text-gray-400 text-sm">No hay actores disponibles</p>
+                    <p className="text-gray-400 text-sm">No actors available</p>
                   ) : (
                     actors
                       .filter((actor) =>
@@ -393,20 +393,20 @@ function MovieDetail() {
                 </div>
                 {editForm.actors_id.length > 0 && (
                   <p className="text-gray-400 text-sm mt-1">
-                    {editForm.actors_id.length} actor(es) seleccionado(s)
+                    {editForm.actors_id.length} selected actor(s)
                   </p>
                 )}
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-gray-300">Géneros</label>
+                  <label className="block text-gray-300">Genres</label>
                   <button
                     type="button"
                     onClick={addGenre}
                     className="text-blue-500 hover:text-blue-400 text-sm"
                   >
-                    + Agregar Género
+                    + Add Genre
                   </button>
                 </div>
                 <div className="space-y-2">
@@ -416,7 +416,7 @@ function MovieDetail() {
                         type="text"
                         value={genre}
                         onChange={(e) => handleGenreChange(index, e.target.value)}
-                        placeholder="Ej: Acción"
+                        placeholder="Ex: Action"
                         className="flex-1 px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                       />
                       <button
@@ -429,7 +429,7 @@ function MovieDetail() {
                     </div>
                   ))}
                   {editForm.genres.length === 0 && (
-                    <p className="text-gray-400 text-sm">No hay géneros agregados</p>
+                    <p className="text-gray-400 text-sm">No genres added</p>
                   )}
                 </div>
               </div>
@@ -439,14 +439,14 @@ function MovieDetail() {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Guardar Cambios
+                  Save Changes
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
                   className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Cancelar
+                  Cancel
                 </button>
               </div>
             </form>

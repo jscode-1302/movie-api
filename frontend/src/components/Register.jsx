@@ -26,7 +26,7 @@ function Register() {
     setSuccess('');
 
     if (formData.password !== formData.password2) {
-      setError('Las contraseñas no coinciden');
+      setError('Passwords do not match');
       return;
     }
 
@@ -49,7 +49,7 @@ function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Registro exitoso. Redirigiendo al login...');
+        setSuccess('Registration successful. Redirecting to login...');
         setTimeout(() => navigate('/login'), 1500);
       } else {
         if (data.username) {
@@ -59,11 +59,11 @@ function Register() {
         } else if (data.password) {
           setError(data.password[0]);
         } else {
-          setError(data.message || 'Error al registrarse');
+          setError(data.message || 'Registration error');
         }
       }
     } catch (err) {
-      setError('Error de conexión con el servidor');
+      setError('Server connection error');
     } finally {
       setLoading(false);
     }
@@ -72,10 +72,10 @@ function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">Registrarse</h2>
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">Sign Up</h2>
         <div className="flex justify-between items-center h-16">
           <Link to="/movies" className="text-blue-500 hover:text-blue-400">
-            ← Volver a películas
+            ← Back to movies
           </Link>
         </div>
         {error && (
@@ -93,7 +93,7 @@ function Register() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-gray-300 mb-2">
-              Usuario
+              Username
             </label>
             <input
               type="text"
@@ -123,7 +123,7 @@ function Register() {
 
           <div>
             <label htmlFor="password" className="block text-gray-300 mb-2">
-              Contraseña
+              Password
             </label>
             <input
               type="password"
@@ -138,7 +138,7 @@ function Register() {
 
           <div>
             <label htmlFor="password2" className="block text-gray-300 mb-2">
-              Confirmar Contraseña
+              Confirm Password
             </label>
             <input
               type="password"
@@ -156,14 +156,14 @@ function Register() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200 disabled:opacity-50"
           >
-            {loading ? 'Cargando...' : 'Registrarse'}
+            {loading ? 'Loading...' : 'Sign Up'}
           </button>
         </form>
 
         <p className="text-gray-400 text-center mt-6">
-          ¿Ya tienes cuenta?{' '}
+          Already have an account?{' '}
           <Link to="/login" className="text-blue-500 hover:text-blue-400">
-            Inicia Sesión
+            Login
           </Link>
         </p>
       </div>

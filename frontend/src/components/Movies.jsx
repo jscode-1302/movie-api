@@ -23,6 +23,12 @@ function Movies() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [directorSearch, setDirectorSearch] = useState('');
   const [actorSearch, setActorSearch] = useState('');
+  const [filters, setFilters] = useState({
+    search: '',
+    director: '',
+    actor: '',
+    genre: '',
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,20 +37,30 @@ function Movies() {
     fetchMovies();
     fetchDirectors();
     fetchActors();
-  }, []);
+  }, [filters]);
 
   const fetchMovies = async () => {
     try {
-      const response = await api.get('/movies/', { skipAuth: true });
+      // Build query params from filters
+      const params = new URLSearchParams();
+      if (filters.search) params.append('search', filters.search);
+      if (filters.director) params.append('director', filters.director);
+      if (filters.actor) params.append('actor', filters.actor);
+      if (filters.genre) params.append('genres', filters.genre);
+
+      const queryString = params.toString();
+      const url = queryString ? `/movies/?${queryString}` : '/movies/';
+
+      const response = await api.get(url, { skipAuth: true });
 
       if (response.ok) {
         const data = await response.json();
         setMovies(data);
       } else {
-        showToast('Error al cargar las películas', 'error');
+        showToast('Error loading movies', 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Connection error with the server', 'error');
     } finally {
       setLoading(false);
     }
@@ -58,7 +74,7 @@ function Movies() {
         setDirectors(data);
       }
     } catch (err) {
-      console.error('Error al cargar directores');
+      console.error('Error loading directors');
     }
   };
 
@@ -70,7 +86,7 @@ function Movies() {
         setActors(data);
       }
     } catch (err) {
-      console.error('Error al cargar actores');
+      console.error('Error loading actors');
     }
   };
 
@@ -79,7 +95,7 @@ function Movies() {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      showToast('Debes iniciar sesión para crear directores', 'error');
+      showToast('You must log in to create Directors', 'error');
       return;
     }
 
@@ -88,7 +104,7 @@ function Movies() {
 
       if (response.ok) {
         const data = await response.json();
-        showToast('Director creado exitosamente', 'success');
+        showToast('Director created successfully', 'success');
         setShowDirectorModal(false);
         setNewDirector({ name: '', country: '' });
         fetchDirectors();
@@ -96,10 +112,10 @@ function Movies() {
         setDirectorSearch('');
       } else {
         const data = await response.json();
-        showToast(JSON.stringify(data) || 'Error al crear el director', 'error');
+        showToast(JSON.stringify(data) || 'Error creating director', 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Connection error with the server', 'error');
     }
   };
 
@@ -108,7 +124,7 @@ function Movies() {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      showToast('Debes iniciar sesión para crear actores', 'error');
+      showToast('You must log in to create actors', 'error');
       return;
     }
 
@@ -117,7 +133,7 @@ function Movies() {
 
       if (response.ok) {
         const data = await response.json();
-        showToast('Actor creado exitosamente', 'success');
+        showToast('Actor created successfully', 'success');
         setShowActorModal(false);
         setNewActor({ name: '', country: '' });
         fetchActors();
@@ -125,10 +141,10 @@ function Movies() {
         setActorSearch('');
       } else {
         const data = await response.json();
-        showToast(JSON.stringify(data) || 'Error al crear el actor', 'error');
+        showToast(JSON.stringify(data) || 'Error creating actor', 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Connection error with the server', 'error');
     }
   };
 
@@ -137,17 +153,17 @@ function Movies() {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      showToast('Debes iniciar sesión para crear películas', 'error');
+      showToast('You must log in to create movies', 'error');
       return;
     }
 
     if (!newMovie.director) {
-      showToast('Debes seleccionar un director', 'warning');
+      showToast('You must select a director', 'warning');
       return;
     }
 
     if (newMovie.actors_id.length === 0) {
-      showToast('Debes seleccionar al menos un actor', 'warning');
+      showToast('You must select at least one actor', 'warning');
       return;
     }
 
@@ -155,16 +171,16 @@ function Movies() {
       const response = await api.post('/movies/', newMovie);
 
       if (response.ok) {
-        showToast('Película creada exitosamente', 'success');
+        showToast('Movie created successfully', 'success');
         setShowCreateModal(false);
         setNewMovie({ title: '', director: '', actors_id: [] });
         fetchMovies();
       } else {
         const data = await response.json();
-        showToast(JSON.stringify(data) || 'Error al crear la película', 'error');
+        showToast(JSON.stringify(data) || 'Error creating movie', 'error');
       }
     } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
+      showToast(err.message || 'Connection error with the server', 'error');
     }
   };
 
@@ -177,32 +193,6 @@ function Movies() {
     }));
   };
 
-  const handleDeleteMovie = async (id) => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      showToast('Debes iniciar sesión para eliminar películas', 'error');
-      return;
-    }
-
-    if (!window.confirm('¿Estás seguro de eliminar esta película?')) {
-      return;
-    }
-
-    try {
-      const response = await api.delete(`/movies/${id}/`);
-
-      if (response.ok) {
-        showToast('Película eliminada exitosamente', 'success');
-        fetchMovies();
-      } else {
-        showToast('Error al eliminar la película', 'error');
-      }
-    } catch (err) {
-      showToast(err.message || 'Error de conexión con el servidor', 'error');
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
@@ -212,7 +202,7 @@ function Movies() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Cargando películas...</div>
+        <div className="text-white text-xl">Loading movies...</div>
       </div>
     );
   }
@@ -240,13 +230,13 @@ function Movies() {
                     onClick={() => setShowCreateModal(true)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition duration-200"
                   >
-                    + Crear Película
+                    + Create Movie
                   </button>
                   <button
                     onClick={handleLogout}
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition duration-200"
                   >
-                    Cerrar Sesión
+                    Logout
                   </button>
                 </>
               ) : (
@@ -254,7 +244,7 @@ function Movies() {
                   to="/login"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition duration-200"
                 >
-                  Iniciar Sesión
+                  Login
                 </Link>
               )}
             </div>
@@ -265,13 +255,101 @@ function Movies() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!isAuthenticated && (
           <div className="bg-yellow-500/10 border border-yellow-500 text-yellow-500 px-4 py-3 rounded mb-6">
-            Para crear y editar películas, directores y actores necesitas iniciar sesión
+            You must log in to create and edit movies, directors, and actors
           </div>
         )}
 
+        {/* Filters Section */}
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Filters</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Search */}
+            <div>
+              <label htmlFor="search" className="block text-gray-300 text-sm mb-2">
+                Search
+              </label>
+              <input
+                type="text"
+                id="search"
+                placeholder="Search by title..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Director Filter */}
+            <div>
+              <label htmlFor="filter-director" className="block text-gray-300 text-sm mb-2">
+                Director
+              </label>
+              <select
+                id="filter-director"
+                value={filters.director}
+                onChange={(e) => setFilters({ ...filters, director: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="">All Directors</option>
+                {directors.map((director) => (
+                  <option key={director.id} value={director.id}>
+                    {director.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Actor Filter */}
+            <div>
+              <label htmlFor="filter-actor" className="block text-gray-300 text-sm mb-2">
+                Actor
+              </label>
+              <select
+                id="filter-actor"
+                value={filters.actor}
+                onChange={(e) => setFilters({ ...filters, actor: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="">All Actors</option>
+                {actors.map((actor) => (
+                  <option key={actor.id} value={actor.id}>
+                    {actor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Genre Filter */}
+            <div>
+              <label htmlFor="filter-genre" className="block text-gray-300 text-sm mb-2">
+                Genre
+              </label>
+              <input
+                type="text"
+                id="filter-genre"
+                placeholder="e.g., Action, Drama..."
+                value={filters.genre}
+                onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Clear Filters Button */}
+          {(filters.search || filters.director || filters.actor || filters.genre) && (
+            <div className="mt-4">
+              <button
+                onClick={() => setFilters({ search: '', director: '', actor: '', genre: '' })}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition duration-200"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+        </div>
+
         {movies.length === 0 ? (
           <div className="text-center text-gray-400 mt-12">
-            <p className="text-xl">No hay películas disponibles</p>
+            <p className="text-xl">No movies available</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -310,7 +388,7 @@ function Movies() {
                       to={`/movies/${movie.id}`}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center px-3 py-2 rounded text-sm transition duration-200"
                     >
-                      Ver Detalle
+                      View Details
                     </Link>
                   </div>
                 </div>
@@ -324,11 +402,11 @@ function Movies() {
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
           <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md my-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Crear Película</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Create Movie</h2>
             <form onSubmit={handleCreateMovie} className="space-y-4">
               <div>
                 <label htmlFor="title" className="block text-gray-300 mb-2">
-                  Título de la Película *
+                  Movie Title *
                 </label>
                 <input
                   type="text"
@@ -337,7 +415,7 @@ function Movies() {
                   onChange={(e) => setNewMovie({ ...newMovie, title: e.target.value })}
                   required
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
-                  placeholder="Ej: Inception"
+                  placeholder="Ex: Inception"
                 />
               </div>
 
@@ -349,12 +427,12 @@ function Movies() {
                     onClick={() => setShowDirectorModal(true)}
                     className="text-blue-500 hover:text-blue-400 text-sm"
                   >
-                    + Nuevo Director
+                    + New Director
                   </button>
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar director..."
+                  placeholder="Search director..."
                   value={directorSearch}
                   onChange={(e) => setDirectorSearch(e.target.value)}
                   className="w-full px-4 py-2 mb-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
@@ -365,7 +443,7 @@ function Movies() {
                   required
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="">Selecciona un director</option>
+                  <option value="">Select a director</option>
                   {directors
                     .filter((director) =>
                       director.name.toLowerCase().includes(directorSearch.toLowerCase())
@@ -380,25 +458,25 @@ function Movies() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-gray-300">Actores * (al menos 1)</label>
+                  <label className="block text-gray-300">Actors * (at least 1)</label>
                   <button
                     type="button"
                     onClick={() => setShowActorModal(true)}
                     className="text-blue-500 hover:text-blue-400 text-sm"
                   >
-                    + Nuevo Actor
+                    + New Actor
                   </button>
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar actor..."
+                  placeholder="Search actor..."
                   value={actorSearch}
                   onChange={(e) => setActorSearch(e.target.value)}
                   className="w-full px-4 py-2 mb-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                 />
                 <div className="bg-gray-700 rounded border border-gray-600 p-3 max-h-48 overflow-y-auto">
                   {actors.length === 0 ? (
-                    <p className="text-gray-400 text-sm">No hay actores disponibles</p>
+                    <p className="text-gray-400 text-sm">No actors available</p>
                   ) : (
                     actors
                       .filter((actor) =>
@@ -424,13 +502,13 @@ function Movies() {
                 </div>
                 {newMovie.actors_id.length > 0 && (
                   <p className="text-gray-400 text-sm mt-1">
-                    {newMovie.actors_id.length} actor(es) seleccionado(s)
+                    {newMovie.actors_id.length} selected actor(s)
                   </p>
                 )}
               </div>
 
               <p className="text-gray-400 text-sm">
-                Los demás datos (año, rating, géneros, etc.) se obtendrán automáticamente de TMDB.
+                The rest of the data (year, rating, genres, etc.) will be obtained directly from TMDB
               </p>
 
               <div className="flex gap-3 pt-2">
@@ -438,7 +516,7 @@ function Movies() {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Crear Película
+                  Create Movie
                 </button>
                 <button
                   type="button"
@@ -448,7 +526,7 @@ function Movies() {
                   }}
                   className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Cancelar
+                  Cancel
                 </button>
               </div>
             </form>
@@ -460,11 +538,11 @@ function Movies() {
       {showDirectorModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-2xl font-bold text-white mb-6">Crear Director</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Create Director</h2>
             <form onSubmit={handleCreateDirector} className="space-y-4">
               <div>
                 <label htmlFor="director-name" className="block text-gray-300 mb-2">
-                  Nombre *
+                  Name *
                 </label>
                 <input
                   type="text"
@@ -473,12 +551,12 @@ function Movies() {
                   onChange={(e) => setNewDirector({ ...newDirector, name: e.target.value })}
                   required
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
-                  placeholder="Ej: Christopher Nolan"
+                  placeholder="Ex: Christopher Nolan"
                 />
               </div>
               <div>
                 <label htmlFor="director-country" className="block text-gray-300 mb-2">
-                  País
+                  Country
                 </label>
                 <input
                   type="text"
@@ -486,7 +564,7 @@ function Movies() {
                   value={newDirector.country}
                   onChange={(e) => setNewDirector({ ...newDirector, country: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
-                  placeholder="Ej: USA"
+                  placeholder="Ex: USA"
                 />
               </div>
               <div className="flex gap-3">
@@ -494,7 +572,7 @@ function Movies() {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Crear
+                  Create
                 </button>
                 <button
                   type="button"
@@ -504,7 +582,7 @@ function Movies() {
                   }}
                   className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Cancelar
+                  Cancel
                 </button>
               </div>
             </form>
@@ -516,11 +594,11 @@ function Movies() {
       {showActorModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-2xl font-bold text-white mb-6">Crear Actor</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Create Actor</h2>
             <form onSubmit={handleCreateActor} className="space-y-4">
               <div>
                 <label htmlFor="actor-name" className="block text-gray-300 mb-2">
-                  Nombre *
+                  Name *
                 </label>
                 <input
                   type="text"
@@ -529,12 +607,12 @@ function Movies() {
                   onChange={(e) => setNewActor({ ...newActor, name: e.target.value })}
                   required
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
-                  placeholder="Ej: Leonardo DiCaprio"
+                  placeholder="Ex: Leonardo DiCaprio"
                 />
               </div>
               <div>
                 <label htmlFor="actor-country" className="block text-gray-300 mb-2">
-                  País
+                  Country
                 </label>
                 <input
                   type="text"
@@ -542,7 +620,7 @@ function Movies() {
                   value={newActor.country}
                   onChange={(e) => setNewActor({ ...newActor, country: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
-                  placeholder="Ej: USA"
+                  placeholder="Ex: USA"
                 />
               </div>
               <div className="flex gap-3">
@@ -550,7 +628,7 @@ function Movies() {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Crear
+                  Create
                 </button>
                 <button
                   type="button"
@@ -560,7 +638,7 @@ function Movies() {
                   }}
                   className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded transition duration-200"
                 >
-                  Cancelar
+                  Cancel
                 </button>
               </div>
             </form>

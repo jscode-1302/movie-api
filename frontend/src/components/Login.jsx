@@ -38,13 +38,13 @@ function Login() {
       if (response.ok) {
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh', data.refresh);
-        setSuccess('Inicio de sesión exitoso. Redirigiendo...');
+        setSuccess('Login successful. Redirecting...');
         setTimeout(() => navigate('/movies'), 1500);
       } else {
-        setError(data.detail|| 'Error al iniciar sesión');
+        setError(data.detail|| 'Login error');
       }
     } catch (err) {
-      setError('Error de conexión con el servidor');
+      setError('Server connection error');
     } finally {
       setLoading(false);
     }
@@ -53,10 +53,10 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">Iniciar Sesión</h2>
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">Login</h2>
         <div className="flex justify-between items-center h-16">
           <Link to="/movies" className="text-blue-500 hover:text-blue-400">
-            ← Volver a películas
+            ← Back to movies
           </Link>
         </div>
         {error && (
@@ -74,7 +74,7 @@ function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-gray-300 mb-2">
-              Usuario
+              Username
             </label>
             <input
               type="text"
@@ -89,7 +89,7 @@ function Login() {
 
           <div>
             <label htmlFor="password" className="block text-gray-300 mb-2">
-              Contraseña
+              Password
             </label>
             <input
               type="password"
@@ -107,14 +107,14 @@ function Login() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200 disabled:opacity-50"
           >
-            {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            {loading ? 'Loading...' : 'Login'}
           </button>
         </form>
 
         <p className="text-gray-400 text-center mt-6">
-          ¿No tienes cuenta?{' '}
+          Don't have an account?{' '}
           <Link to="/register" className="text-blue-500 hover:text-blue-400">
-            Regístrate
+            Sign up
           </Link>
         </p>
       </div>
