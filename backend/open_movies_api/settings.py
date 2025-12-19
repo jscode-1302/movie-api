@@ -225,6 +225,11 @@ LOGGING = {
             'level': 'WARNING',
             'handlers': ['file', 'console'],
             'propagate': False
+        },
+        'movies.auth_views': {
+            'level': env('DEBUG_LOG_LEVEL'),
+            'handlers': ['file', 'console'],
+            'propagate': False
         }
     },
     'formatters': {
