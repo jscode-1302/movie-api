@@ -193,7 +193,7 @@ CACHES = {
 # spectacular settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Movie Database API',
-    'DESCRIPTION': 'Public API REST to search for movie, actors and directors info. It uses the TMDb API when a movie is not in the app db',
+    'DESCRIPTION': 'Public API REST to search for movie, actors and directors info. It uses the TMDb API to obtain some data.',
     'VERSION': '1.0.0',
 }
 

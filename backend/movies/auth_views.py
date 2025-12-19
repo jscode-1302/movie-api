@@ -79,7 +79,7 @@ class LoginView(TokenObtainPairView):
             return Response({
                 'success': False,
                 'message': 'Username and password fields are required'
-            })
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         user = authenticate(username=username, password=password)
         
