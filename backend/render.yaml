@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: movie-api-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate
+    startCommand: gunicorn open_movies_api.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: TMDB_API_KEY
+        sync: false
+      - key: DEBUG_LOG_LEVEL
+        value: INFO
+      - key: DJANGO_LOG_FILE
+        value: /tmp/django_logs.txt

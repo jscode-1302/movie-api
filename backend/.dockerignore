@@ -1,0 +1,13 @@
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.git
+.gitignore
+*.log
+logs/
+.pytest_cache/
+.vscode/
+*.md
+docker-compose.yml
