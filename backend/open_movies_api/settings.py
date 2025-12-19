@@ -17,6 +17,8 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGS_DIR = BASE_DIR / 'logs'
+os.makedirs(LOGS_DIR, exist_ok=True)
 
 # initialize django-environ
 env = environ.Env(
@@ -165,6 +167,8 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
         "rest_framework.filters.SearchFilter",
     ],
+
+    'EXCEPTION_HANDLER': 'movies.exceptions.movies_exception_handler',
 }
 
 # JWT configuration
@@ -191,4 +195,42 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Movie Database API',
     'DESCRIPTION': 'Public API REST to search for movie, actors and directors info. It uses the TMDb API when a movie is not in the app db',
     'VERSION': '1.0.0',
+}
+
+# logging
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': env('DJANGO_LOG_FILE'),
+            'maxBytes': 10485760, # 10 MB
+            'backupCount': 5,
+            'level': env('DEBUG_LOG_LEVEL'),
+            'formatter': 'simple'
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': env('DEBUG_LOG_LEVEL'),
+            'formatter': 'simple'
+        }
+    },
+    "loggers": {
+        'movies.views': {
+            "level": env('DEBUG_LOG_LEVEL'),
+            'handlers': ['file', 'console']
+        },
+        'movies.errors': {
+            'level': 'WARNING',
+            'handlers': ['file', 'console'],
+            'propagate': False
+        }
+    },
+    'formatters': {
+        'simple': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{'
+        }
+    }
 }
