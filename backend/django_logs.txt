@@ -1,2 +1,0 @@
-[2025-12-19 00:04:56,200] INFO movies.views: Movie updated: 'Schindler's List' by user [jean]
-[2025-12-19 00:05:16,669] WARNING movies.errors: Status: 401 | Method: POST | Path: /api/auth/login/ | User: AnonymousUser | IP: 127.0.0.1 | View: TokenObtainPairView | Detail: No active account found with the given credentials

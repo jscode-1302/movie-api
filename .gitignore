@@ -75,3 +75,8 @@ frontend/build/
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+
+# Logs directory
+logs/
+backend/logs/
+backend/django_logs.txt
