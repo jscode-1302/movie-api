@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class MovieListCreateView(generics.ListCreateAPIView):
     """Allows anyone to list movies and only authenticated users to create, update and delete"""
     serializer_class = MovieSerializer
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.select_related('director').prefetch_related('actors').all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_class = MovieFilter
     search_fields = ['title', 'description', 'year', 'director__name', 'actors__name']
@@ -32,7 +32,7 @@ class MovieListCreateView(generics.ListCreateAPIView):
 class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Allows anyone to see movie details and only authenticated users to update and delete"""
     serializer_class = MovieSerializer
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.select_related('director').prefetch_related('actors').all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_update(self, serializer):
