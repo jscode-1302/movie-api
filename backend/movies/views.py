@@ -19,7 +19,8 @@ class MovieListCreateView(generics.ListCreateAPIView):
     filterset_class = MovieFilter
     search_fields = ['title', 'description', 'year', 'director__name', 'actors__name']
 
-    @method_decorator(cache_page(60 * 5, key_prefix='movies_list'))
+    # Temporarily disabled cache to debug 500 error
+    # @method_decorator(cache_page(60 * 5, key_prefix='movies_list'))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
