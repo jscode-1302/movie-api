@@ -16,6 +16,10 @@ class Director(models.Model):
     def total_movies(self):
         return self.movies.count()
 
+    @property
+    def movies_name(self):
+        return list(self.movies.values_list('title', flat=True))
+
     def __str__(self):
         return self.name
     
@@ -30,6 +34,10 @@ class Actor(models.Model):
     @property
     def total_movies(self):
         return self.movies.count()
+    
+    @property
+    def movies_name(self):
+        return list(self.movies.values_list('title', flat=True))
 
     def __str__(self):
         return self.name

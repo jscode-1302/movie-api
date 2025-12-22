@@ -6,15 +6,19 @@ from .services import fetch_movie_data
 
 class DirectorSerializer(serializers.ModelSerializer):
     total_movies = serializers.SerializerMethodField()
+    movies_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Director
-        fields = ['id', 'name', 'country', 'total_movies']
+        fields = ['id', 'name', 'country', 'total_movies', 'movies_name']
 
         read_only_fields = ['id']
 
     def get_total_movies(self, obj):
         return obj.total_movies
+    
+    def get_movies_name(self, obj):
+        return obj.movies_name
     
     def validate(self, data):
         """Validates duplicate name"""
@@ -44,15 +48,19 @@ class DirectorSerializer(serializers.ModelSerializer):
 )
 class ActorSerializer(serializers.ModelSerializer):
     total_movies = serializers.SerializerMethodField()
+    movies_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Actor
-        fields = ['id', 'name', 'country', 'total_movies']
+        fields = ['id', 'name', 'country', 'total_movies', 'movies_name']
 
         read_only_fields = ['id']
 
     def get_total_movies(self, obj):
         return obj.total_movies
+    
+    def get_movies_name(self, obj):
+        return obj.movies_name
     
     def validate(self, data):
         """Validates duplicate name"""
