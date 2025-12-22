@@ -12,6 +12,7 @@ function Directors() {
   const [editingDirector, setEditingDirector] = useState(null);
   const [newDirector, setNewDirector] = useState({ name: '', country: '' });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showMoviesPopover, setShowMoviesPopover] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -190,9 +191,41 @@ function Directors() {
                     <span className="text-gray-500">Country:</span> {director.country}
                   </p>
                 )}
-                <p className="text-gray-400 mb-4">
-                  <span className="text-gray-500">Total movies:</span> {director.total_movies || 0}
-                </p>
+                <div className="relative mb-4">
+                  <p className="text-gray-400">
+                    <span className="text-gray-500">Total movies:</span>{' '}
+                    {director.total_movies > 0 ? (
+                      <button
+                        onClick={() => setShowMoviesPopover(showMoviesPopover === director.id ? null : director.id)}
+                        className="text-blue-400 hover:text-blue-300 underline cursor-pointer transition"
+                      >
+                        {director.total_movies}
+                      </button>
+                    ) : (
+                      <span>0</span>
+                    )}
+                  </p>
+                  {showMoviesPopover === director.id && director.movies_name && director.movies_name.length > 0 && (
+                    <div className="absolute left-0 top-full mt-2 bg-gray-700 border border-gray-600 rounded-lg shadow-xl p-4 z-10 min-w-[200px] max-w-[300px]">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-sm font-semibold text-white">Movies:</h4>
+                        <button
+                          onClick={() => setShowMoviesPopover(null)}
+                          className="text-gray-400 hover:text-white text-lg leading-none"
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <ul className="space-y-1 max-h-60 overflow-y-auto">
+                        {director.movies_name.map((movie, idx) => (
+                          <li key={idx} className="text-sm text-gray-300">
+                            • {movie}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
                 {isAuthenticated && (
                   <button
                     onClick={() => {
