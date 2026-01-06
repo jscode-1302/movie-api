@@ -1,11 +1,10 @@
 # Open Movie API
 
 A backend-focused application built with DRF that allows users to get information about Movies, Directors and Actors connected with the TMDB API to get full information about a movie.
----
+
 ## Demo
 
 Live Demo: **https://movie-api-one.vercel.app/**
----
 
 ## Tech Stack
 
