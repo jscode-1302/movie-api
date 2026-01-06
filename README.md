@@ -4,7 +4,7 @@ A backend-focused application built with DRF that allows users to get informatio
 
 ## Demo
 
-Live Demo: **https://movie-api-one.vercel.app/**
+Live Demo: [https://movie-api-one.vercel.app/](https://movie-api-one.vercel.app/)
 
 ## Tech Stack
 
