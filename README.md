@@ -87,6 +87,17 @@ Once the backend is running, visit:
 - Swagger UI: `http://localhost:8000/api/schema/swagger-ui/`
 - ReDoc: `http://localhost:8000/api/schema/redoc/`
 
+## Contributing
+
+Contributions, issues and feature requests are welcome!
+
+Feel free to check the [issues page](https://github.com/jscode-1302/movie-api/issues).
+
+## Contact
+
+If you have any questions or suggestions, feel free to reach out:
+- GitHub: [@jscode-1302](https://github.com/jscode-1302)
+
 ## License
 
 MIT License
